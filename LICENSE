@@ -1,0 +1,32 @@
+# PolyPulse public beta test plan
+
+Use a copy of a `.blend` file. The smoke script runs automatically in background mode; the manual checks below verify the visible result.
+
+## Run the automated robot
+
+From the extracted project folder:
+
+```bash
+blender --background --factory-startup --python tests/polypulse_smoke_tests.py
+```
+
+Expected result: Blender exits with code `0`, the console ends with `SUMMARY passed=... failed=0`, and a JSON report is written in the temporary test folder. Any `FAIL` needs investigation before calling the build stable.
+
+## Manual workflow and expected results
+
+1. Install the ZIP through **Edit > Preferences > Add-ons > Install**. Enable PolyPulse. Open the 3D View sidebar with `N`. Expected: one **PolyPulse** tab, no activation screen, no network request, no Pro/Premium labels.
+2. Select one or more mesh objects and run **Advanced Scan**. Expected: statistics, warnings, texture list, and a Game Ready Score appear. The score is display-only and cannot be dragged.
+3. Run **Auto Fix Mesh** on a duplicated test file. Expected: duplicate/loose/zero-area geometry is cleaned, normals are recalculated, and a before/after report appears. Undo must restore the original.
+4. Run **Generate LOD Chain**. Expected: new objects named `_LOD0`, `_LOD1`, `_LOD2`, `_LOD3` appear; the original object remains. Run it on a disposable scene because repeated runs create another chain.
+5. Run **Create UV Atlas**. Expected: selected meshes receive a UV layout and packed islands. If material merge is enabled, material slots are reduced intentionally.
+6. Run each collider type. Expected: a correctly positioned object named `_COLLISION_Box`, `_COLLISION_Sphere`, `_COLLISION_Capsule`, or `_COLLISION_Convex` appears near the source mesh.
+7. Toggle **Visual Scan** on and off. Expected: overlay highlights ngons, invalid UV polygons, and duplicate vertices; clicking again removes the overlay and does not leave a draw handler behind.
+8. Export with UE5, Unity, and Godot presets. Expected: an FBX/FBX/GLB file is created at the chosen path and Blender reports success. Re-import each file in a clean Blender file to check that geometry, materials, UVs, and transforms are sensible.
+9. Run **Game Ready Check**, **Draw Calls Estimator**, **Texture Scan**, **Export Report**, and **Batch Optimize**. Expected: each produces a panel result or report without a traceback.
+
+## Known beta boundaries
+
+- Full runtime testing requires a real Blender installation; Python compilation alone is not enough.
+- Exporter output and viewport overlay still require visual review.
+- Use Blender 3.6 LTS and 4.3+ as the primary test targets.
+- **Do not test on private production files** — use a disposable copy. If you find a bug, strip private assets from the `.blend` before attaching it to an issue.

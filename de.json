@@ -1,0 +1,181 @@
+from __future__ import annotations
+import json
+import os
+import sys
+import tempfile
+import traceback
+from pathlib import Path
+import bpy
+ADDON_ID = 'polypulse'
+ROOT = Path(__file__).resolve().parent.parent
+REPORT_PATH = Path(os.environ.get('POLYPULSE_TEST_REPORT', str(ROOT /
+    'polypulse_smoke_report.json')))
+RESULTS = []
+TEMP_DIR = Path(tempfile.mkdtemp(prefix='polypulse_smoke_'))
+
+
+def record(name, status, detail=''):
+    item = {'name': name, 'status': status, 'detail': detail}
+    RESULTS.append(item)
+    print(f'[PolyPulse smoke] {status:7} {name}: {detail}')
+
+
+def run(name, fn, *, allow_cancelled=False):
+    try:
+        result = fn()
+        if result is None:
+            result = {'FINISHED'}
+        if 'FINISHED' in result:
+            record(name, 'PASS', str(sorted(result)))
+            return True
+        if allow_cancelled and 'CANCELLED' in result:
+            record(name, 'PASS', 'expected CANCELLED')
+            return True
+        record(name, 'FAIL', f'returned {sorted(result)}')
+    except Exception:
+        record(name, 'FAIL', traceback.format_exc(limit=3))
+    return False
+
+
+def op(idname):
+    module, name = idname.split('.', 1)
+    return getattr(getattr(bpy.ops, module), name)
+
+
+def selected_meshes():
+    return [o for o in bpy.context.selected_objects if o.type == 'MESH']
+
+
+def reset_scene():
+    bpy.ops.object.mode_set(mode='OBJECT'
+        ) if bpy.context.object and bpy.context.object.mode != 'OBJECT' else None
+    bpy.ops.object.select_all(action='SELECT')
+    bpy.ops.object.delete(use_global=False)
+    for datablocks in (bpy.data.meshes, bpy.data.curves, bpy.data.materials,
+        bpy.data.cameras, bpy.data.lights):
+        for block in list(datablocks):
+            if block.users == 0:
+                datablocks.remove(block)
+
+
+def make_test_scene():
+    bpy.ops.mesh.primitive_cube_add(location=(0, 0, 0))
+    asset = bpy.context.object
+    asset.name = 'SmokeAsset'
+    asset.data.name = 'SmokeAssetMesh'
+    mat = bpy.data.materials.new('SmokeMaterial')
+    mat.use_nodes = True
+    asset.data.materials.append(mat)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8,
+        location=(2.5, 0, 0))
+    sphere = bpy.context.object
+    sphere.name = 'SmokeSphere'
+    sphere.data.materials.append(mat)
+    bpy.context.view_layer.objects.active = asset
+    asset.select_set(True)
+    for o in bpy.context.selected_objects:
+        o.select_set(o in {asset, sphere})
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.uv.smart_project(angle_limit=1.15192, island_margin=0.02)
+    bpy.ops.object.mode_set(mode='OBJECT')
+    return asset, sphere
+
+
+def assert_mesh_selected():
+    assert selected_meshes(), 'expected at least one selected mesh'
+
+
+def main():
+    print('[PolyPulse smoke] Blender', bpy.app.version_string)
+    reset_scene()
+    if ADDON_ID not in bpy.context.preferences.addons:
+        if str(ROOT) not in sys.path:
+            sys.path.insert(0, str(ROOT))
+        import polypulse
+        polypulse.register()
+    asset, sphere = make_test_scene()
+    bpy.ops.object.select_all(action='SELECT')
+    bpy.context.view_layer.objects.active = asset
+    run('polypulse.analyze_scene', lambda : op('polypulse.analyze_scene').
+        execute(bpy.context))
+    run('polypulse.advanced_scan', lambda : op('polypulse.advanced_scan').
+        execute(bpy.context))
+    run('polypulse.draw_calls_estimator', lambda : op(
+        'polypulse.draw_calls_estimator').execute(bpy.context))
+    run('polypulse.game_ready_check', lambda : op(
+        'polypulse.game_ready_check').execute(bpy.context))
+    run('polypulse.remove_doubles', lambda : op('polypulse.remove_doubles')
+        .execute(bpy.context))
+    run('polypulse.auto_fix_mesh', lambda : op('polypulse.auto_fix_mesh').
+        execute(bpy.context))
+    run('polypulse.smart_decimate', lambda : op('polypulse.smart_decimate')
+        .execute(bpy.context))
+    run('polypulse.merge_objects', lambda : op('polypulse.merge_objects').
+        execute(bpy.context))
+    reset_scene()
+    asset, sphere = make_test_scene()
+    bpy.ops.object.select_all(action='DESELECT')
+    asset.select_set(True)
+    bpy.context.view_layer.objects.active = asset
+    lod = op('polypulse.generate_lod')
+    lod.lod_level = '1'
+    run('polypulse.generate_lod', lambda : lod.execute(bpy.context))
+    run('polypulse.generate_lod_chain', lambda : op(
+        'polypulse.generate_lod_chain').execute(bpy.context))
+    run('polypulse.create_uv_atlas', lambda : op(
+        'polypulse.create_uv_atlas').execute(bpy.context))
+    collider = op('polypulse.generate_collider')
+    for kind in ('BOX', 'SPHERE', 'CAPSULE', 'CONVEX'):
+        collider.collider_type = kind
+        run(f'polypulse.generate_collider[{kind}]', lambda c=collider: c.
+            execute(bpy.context))
+    run('polypulse.visual_scan[on]', lambda : op('polypulse.visual_scan').
+        execute(bpy.context))
+    run('polypulse.visual_scan[off]', lambda : op('polypulse.visual_scan').
+        execute(bpy.context))
+    tex = op('polypulse.texture_scan')
+    tex.target_platform = 'PC'
+    run('polypulse.texture_scan', lambda : tex.execute(bpy.context))
+    ue = op('polypulse.export_ue5')
+    ue.filepath = str(TEMP_DIR / 'smoke_ue5.fbx')
+    run('polypulse.export_ue5', lambda : ue.execute(bpy.context))
+    unity = op('polypulse.export_unity')
+    unity.filepath = str(TEMP_DIR / 'smoke_unity.fbx')
+    run('polypulse.export_unity', lambda : unity.execute(bpy.context))
+    godot = op('polypulse.export_godot')
+    godot.filepath = str(TEMP_DIR / 'smoke_godot.glb')
+    run('polypulse.export_godot', lambda : godot.execute(bpy.context))
+    bpy.ops.wm.save_as_mainfile(filepath=str(TEMP_DIR / 'input.blend'))
+    report = op('polypulse.export_report')
+    run('polypulse.export_report', lambda : report.execute(bpy.context))
+    batch = op('polypulse.batch_optimize')
+    batch.directory = str(TEMP_DIR)
+    run('polypulse.batch_optimize', lambda : batch.execute(bpy.context))
+    props = bpy.context.scene.polypulse_props
+    if props.adv_polys <= 0 or props.game_score < 0:
+        record('postconditions.analysis', 'FAIL',
+            'analysis properties not populated')
+    else:
+        record('postconditions.analysis', 'PASS',
+            f'{props.adv_polys} polys, score {props.game_score}')
+    for expected in ('smoke_ue5.fbx', 'smoke_unity.fbx', 'smoke_godot.glb'):
+        path = TEMP_DIR / expected
+        record(f'postconditions.file[{expected}]', 'PASS' if path.exists() and
+            path.stat().st_size else 'FAIL', str(path))
+    failed = [x for x in RESULTS if x['status'] == 'FAIL']
+    report = {'blender_version': list(bpy.app.version), 'addon': ADDON_ID,
+        'passed': len(RESULTS) - len(failed), 'failed': len(failed),
+        'temporary_directory': str(TEMP_DIR), 'results': RESULTS}
+    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    REPORT_PATH.write_text(json.dumps(report, indent=2, ensure_ascii=False),
+        encoding='utf-8')
+    print(
+        f"[PolyPulse smoke] SUMMARY passed={report['passed']} failed={report['failed']}"
+        )
+    print(f'[PolyPulse smoke] REPORT {REPORT_PATH}')
+    return 1 if failed else 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

@@ -1,0 +1,14 @@
+# PolyPulse smoke tests
+
+Run from the extracted package root:
+
+```bash
+blender --background --factory-startup --python tests/polypulse_smoke_tests.py
+```
+
+The test creates a disposable scene and runs every registered operator with an
+execute path, including all collider variants and all three exporters. It does
+not replace visual QA: check the generated FBX/GLB, UV layout, viewport overlay,
+and panels manually in Blender 3.6 LTS and 4.3+.
+
+Set `POLYPULSE_TEST_REPORT=/path/report.json` to choose the JSON report path.
