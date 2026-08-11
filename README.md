@@ -7,10 +7,9 @@
 *Mesh repair · LOD generation · UV atlas · Collider generation · Engine export — all in one N-panel*
 
 [![Blender](https://img.shields.io/badge/Blender-2.83%20LTS%20%E2%80%93%205.x-blue?logo=blender&logoColor=white)](https://www.blender.org)
-[![Version](https://img.shields.io/badge/version-0.5.8%20beta-orange)](https://github.com/polypulse/polypulse/releases)
+[![Version](https://img.shields.io/badge/version-0.5.8%20beta-orange)](https://github.com/DevWinstor/polypulse/releases)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-open%20beta-purple.svg)](#-open-beta)
-[![CI](https://github.com/polypulse/polypulse/actions/workflows/ci.yml/badge.svg)](https://github.com/polypulse/polypulse/actions)
 [![Languages](https://img.shields.io/badge/i18n-EN%20%C2%B7%20RU%20%C2%B7%20DE%20%C2%B7%20ES%20%C2%B7%20JP-teal.svg)](#-languages)
 
 [Features](#-features) · [Install](#-install) · [Quick Start](#-quick-start) · [Screenshots](#-screenshots) · [Roadmap](#-roadmap) · [FAQ](#-faq) · [Contributing](#-contributing)
@@ -27,7 +26,7 @@
 
 Built for technical artists, prop modelers, and indie game devs who want a fast, deterministic path from Blender to a game engine — without leaving the viewport.
 
-> ⚠️ **Open Beta**: This is a public beta release. All features are free and unlocked. Please report bugs and feedback via [GitHub Issues](https://github.com/polypulse/polypulse/issues/new/choose).
+> ⚠️ **Open Beta**: This is a public beta release. All features are free and unlocked. Please report bugs and feedback via [GitHub Issues](https://github.com/DevWinstor/polypulse/issues/new/choose).
 
 ---
 
@@ -101,7 +100,7 @@ Switch language from the addon preferences — UI updates instantly.
 
 ### From GitHub Releases (recommended)
 
-1. Go to [Releases](https://github.com/polypulse/polypulse/releases)
+1. Go to [Releases](https://github.com/DevWinstor/polypulse/releases)
 2. Download `polypulse_v0.5.8_beta.zip`
 3. In Blender: **Edit → Preferences → Add-ons → Install…**
 4. Select the downloaded ZIP file
@@ -112,7 +111,7 @@ Switch language from the addon preferences — UI updates instantly.
 ### From source (developers)
 
 ```bash
-git clone https://github.com/polypulse/polypulse.git
+git clone https://github.com/DevWinstor/polypulse.git
 cd polypulse
 python build_release.py --tag beta
 # Output: dist/polypulse_v0.5.8_beta.zip
